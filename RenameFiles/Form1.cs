@@ -112,8 +112,8 @@ namespace RenameFiles
 
         private void labelGit_Click(object sender, EventArgs e)
         {
-            // Go to Github
-            Process.Start("https://github.com/abdessalam-aadel");
+            // Go to Github repository
+            Process.Start("https://github.com/abdessalam-aadel/RenameFiles");
         }
 
         private void FrmMain_DragDrop(object sender, DragEventArgs e)
