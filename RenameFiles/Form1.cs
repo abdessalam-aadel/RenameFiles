@@ -10,21 +10,21 @@ namespace RenameFiles
     public partial class FrmMain : Form
     {
         // Array of JPG Files found in Folder
-        string[] JPGfiles;
+        string[] IMGfiles;
         // Creat variable to Counting the number of files in a folder 
         int fileCount = 0;
+ 
+        bool ischecked_JPG = true;
+        string typeImg;
 
-        public FrmMain()
-        {
-            InitializeComponent();
-        }
+        public FrmMain() => InitializeComponent();
 
         // Handle Methode Search Directory and Get all JPG files found,
         // and bring out to Array of string
-        public static int SearchDirectoryTree(string path, out string[] JPGfiles)
+        public static int SearchDirectoryTree(string path, string type, out string[] IMGfiles)
         {
-            JPGfiles = Directory.GetFiles(path, "*.jpg", SearchOption.AllDirectories);
-            return JPGfiles.Length;
+            IMGfiles = Directory.GetFiles(path, type, SearchOption.AllDirectories);
+            return IMGfiles.Length;
         }
 
         // Handle Event Click of Buttton Load Folder
@@ -34,7 +34,8 @@ namespace RenameFiles
             if (FD.ShowDialog() == DialogResult.OK)
             {
                 txtBoxLoad.Text = FD.SelectedPath;
-                fileCount = SearchDirectoryTree(FD.SelectedPath, out JPGfiles);
+                typeImg = ischecked_JPG ? ".jpg" : ".tif";
+                fileCount = SearchDirectoryTree(FD.SelectedPath, "*" + typeImg, out IMGfiles);
                 txtTotales.Text = fileCount + " files.";
             }
         }
@@ -44,12 +45,15 @@ namespace RenameFiles
         {
             try
             {
+                if (IMGfiles == null || typeImg == null || IMGfiles.Length == 0)
+                    return;
+                
                 Cursor = Cursors.WaitCursor;
 
                 // Creat list of all names in jpg files array
                 List<int> listNbr = new List<int>();
                 
-                foreach (string filePath in JPGfiles)
+                foreach (string filePath in IMGfiles)
                 {
                     FileInfo finfo = new FileInfo(filePath);
                     string nameFile = Path.GetFileNameWithoutExtension(finfo.Name);
@@ -61,7 +65,7 @@ namespace RenameFiles
 
                 for (int i = 1; i <= listNbr.Max() - 3; i++)
                 {
-                    foreach (string filePath in JPGfiles)
+                    foreach (string filePath in IMGfiles)
                     {
                         FileInfo finfo = new FileInfo(filePath);
                         string nameFile = Path.GetFileNameWithoutExtension(finfo.Name);
@@ -69,8 +73,8 @@ namespace RenameFiles
                         if (nbr > 2)
                         {
                             nbr -= 1;
-                            // Creat the same path and new name for the jpg file
-                            string newName = finfo.DirectoryName + @"\" + nbr + ".jpg";
+                            // Creat the same path and new name for the image file
+                            string newName = finfo.DirectoryName + @"\" + nbr + typeImg;
 
                             try
                             {
@@ -89,7 +93,7 @@ namespace RenameFiles
                             }
 
                             // Replace old path with new path in JPGfiles Array
-                            JPGfiles[Array.IndexOf(JPGfiles, filePath)] = newName;
+                            IMGfiles[Array.IndexOf(IMGfiles, filePath)] = newName;
                         }
                     }
                 }
@@ -105,7 +109,7 @@ namespace RenameFiles
                 Cursor = Cursors.Default;
                 txtDone.Text = "";
                 picCheck.Visible = false;
-                txtBoxLoad.Text = "Chose your folder ....";
+                txtBoxLoad.Text = "Choose your folder ....";
                 txtTotales.Text = "...";
             }
         }
@@ -122,7 +126,8 @@ namespace RenameFiles
             if (Directory.Exists(path))
             {
                 txtBoxLoad.Text = path;
-                fileCount = SearchDirectoryTree(path, out JPGfiles);
+                typeImg = ischecked_JPG ? ".jpg" : ".tif";
+                fileCount = SearchDirectoryTree(path, "*" + typeImg, out IMGfiles);
                 txtTotales.Text = fileCount + " files.";
                 picArrowDown.Visible = false;
             }
@@ -133,7 +138,7 @@ namespace RenameFiles
         private void FrmMain_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Copy;
-            txtBoxLoad.Text = "Chose your folder ....";
+            txtBoxLoad.Text = "Choose your folder ....";
             txtTotales.Text = "...";
             picArrowDown.Visible = true;
             txtDone.Text = "";
@@ -143,6 +148,11 @@ namespace RenameFiles
         private void FrmMain_DragLeave(object sender, EventArgs e)
         {
             picArrowDown.Visible = false;
+        }
+
+        private void checkJPG_CheckedChanged(object sender, EventArgs e)
+        {
+            ischecked_JPG = checkJPG.Checked ? true : false;
         }
     }
 }
