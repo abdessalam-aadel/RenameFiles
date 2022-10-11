@@ -23,7 +23,7 @@ namespace RenameFiles
         // and bring out to Array of string
         public static int SearchDirectoryTree(string path, string type, out string[] IMGfiles)
         {
-            IMGfiles = Directory.GetFiles(path, type, SearchOption.AllDirectories);
+            IMGfiles = Directory.GetFiles(path, "*" + type, SearchOption.AllDirectories);
             return IMGfiles.Length;
         }
 
@@ -35,7 +35,7 @@ namespace RenameFiles
             {
                 txtBoxLoad.Text = FD.SelectedPath;
                 typeImg = ischecked_JPG ? ".jpg" : ".tif";
-                fileCount = SearchDirectoryTree(FD.SelectedPath, "*" + typeImg, out IMGfiles);
+                fileCount = SearchDirectoryTree(FD.SelectedPath, typeImg, out IMGfiles);
                 txtTotales.Text = fileCount + " files.";
             }
         }
@@ -127,7 +127,7 @@ namespace RenameFiles
             {
                 txtBoxLoad.Text = path;
                 typeImg = ischecked_JPG ? ".jpg" : ".tif";
-                fileCount = SearchDirectoryTree(path, "*" + typeImg, out IMGfiles);
+                fileCount = SearchDirectoryTree(path, typeImg, out IMGfiles);
                 txtTotales.Text = fileCount + " files.";
                 picArrowDown.Visible = false;
             }
